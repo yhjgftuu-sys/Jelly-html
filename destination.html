@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Destination · VENOM Button demo</title>
+<link rel="stylesheet" href="venom-button.css">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 32px;
+    background: #f4f2ed; color: #121212; font: 17px/1.55 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+  main { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  h1 { margin: 0; font-weight: 500; font-size: clamp(2rem, 6vw, 3.6rem); letter-spacing: -.015em; }
+  p { margin: 0; color: #5d5b55; }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; background: #e4e1d9; padding: 2px 8px; border-radius: 6px; color: #121212; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="arrived">You arrived.</h1>
+  <p>The link navigated to <code id="where">destination.html</code> through ordinary browser navigation.</p>
+  <a href="demo.html" class="venom-button venom-button--sm">BACK</a>
+</main>
+<script>
+  // purely cosmetic: show which demo link brought you here (the navigation itself needs no JavaScript)
+  (function () {
+    var page = new URLSearchParams(location.search).get('page');
+    if (page) {
+      document.getElementById('where').textContent = location.pathname.split('/').pop() + location.search;
+      document.getElementById('arrived').textContent = 'You arrived at “' + page + '”.';
+      document.title = page + ' · VENOM Button demo';
+    }
+  })();
+</script>
+<script src="venom-button.js" defer></script>
+</body>
+</html>

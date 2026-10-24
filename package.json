@@ -1,0 +1,23 @@
+{
+  "name": "venom-button",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Liquid symbiote navigation button: a real <a>, Canvas 2D, no dependencies.",
+  "main": "venom-button.js",
+  "module": "venom-button.mjs",
+  "types": "venom-button.d.ts",
+  "scripts": {
+    "build:esm": "node scripts/make-esm.js",
+    "test": "node tests/run-tests.js",
+    "test:react": "node tests/react-test.js",
+    "test:fidelity": "node tests/fidelity.js",
+    "test:fidelity:logic": "node tests/make-abs-variant.js && node tests/fidelity.js --abs && node tests/state-equivalence.js && node tests/command-stream.js 320"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "playwright": "^1.56.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sharp": "^0.34.5"
+  }
+}

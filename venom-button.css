@@ -1,0 +1,149 @@
+/*!
+ * VENOM Button – styles  v1.0.0
+ *
+ * Every selector is namespaced under .venom-button. The only selector outside that
+ * namespace is html[data-venom-zone-cursor], which exists solely for the opt-in
+ * data-venom-cursor="zone" mode and is inert unless that mode is switched on.
+ * Nothing here touches body, html, generic <a>/<button>, headings, fonts or page colours.
+ *
+ * Customise with CSS custom properties – on the element, on a parent, or in your own class:
+ *
+ *   --venom-width            264px        --venom-height           84px
+ *   --venom-radius           36px         (no-JS look, hit area and focus ring shape)
+ *   --venom-font-size        12.5px       --venom-font-weight      600
+ *   --venom-letter-spacing   .44em        --venom-color            #fff   (label)
+ *   --venom-font-family      "Helvetica Neue", Helvetica, Arial, sans-serif   (use `inherit` for your site font)
+ *   --venom-focus-ring       #000         --venom-focus-offset     14px
+ *
+ * Without JavaScript the element is still a normal, good-looking, fully working link
+ * (the black pill below). With JavaScript the canvas takes over and the pill fades out.
+ */
+
+.venom-button {
+  position: relative;
+  isolation: isolate;                       /* own stacking context: canvas < label < pointer layer, host z-index untouched */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--venom-width, 264px);
+  height: var(--venom-height, 84px);
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--venom-radius, 36px);
+  overflow: visible;                        /* the substance reaches outside the box */
+  vertical-align: middle;
+  background: none;
+  color: var(--venom-color, #fff);
+  font-family: var(--venom-font-family, "Helvetica Neue", Helvetica, Arial, sans-serif);
+  font-size: var(--venom-font-size, 12.5px);
+  font-weight: var(--venom-font-weight, 600);
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: var(--venom-letter-spacing, .44em);
+  text-indent: var(--venom-letter-spacing, .44em);   /* re-centres the label (compensates the trailing letter-space) */
+  text-align: center;
+  text-decoration: none;
+  text-shadow: 0 1px 8px #000;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;               /* no double-tap-zoom delay; scrolling is NOT blocked */
+  outline: none;
+}
+
+/* host sheets often style a:hover / a:visited – keep the label colour and no underline in every state */
+.venom-button:link,
+.venom-button:visited,
+.venom-button:hover,
+.venom-button:active,
+.venom-button:focus {
+  color: var(--venom-color, #fff);
+  text-decoration: none;
+}
+
+/* ── no-JS / fallback look (same recipe as the original's fallback) ── */
+.venom-button::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120% 150% at 30% 0, #2c2c31, #050506 58%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, .45), 0 12px 26px rgba(0, 0, 0, .22);
+  transition: opacity .35s ease;
+}
+.venom-button[data-venom-state="live"]::before { opacity: 0; }   /* the canvas draws the body now */
+.venom-button:not([data-venom-state="live"]):active { transform: scale(.985); }
+
+/* ── keyboard focus ── */
+.venom-button:focus-visible {
+  outline: 2px solid var(--venom-focus-ring, #000);
+  outline-offset: var(--venom-focus-offset, 14px);
+}
+.venom-button:focus:not(:focus-visible) { outline: none; }
+
+/* ── layers (added by venom-button.js; React users can render them in JSX) ── */
+.venom-button__canvas {
+  position: absolute;
+  z-index: 0;
+  left: 0; top: 0;
+  display: block;
+  width: 100%; height: 100%;                /* JS replaces these with the padded, clamped size */
+  margin: 0; padding: 0; border: 0;
+  pointer-events: none;                     /* never intercepts clicks, hovers or touches */
+}
+.venom-button__label {
+  position: relative;
+  z-index: 1;
+  display: block;
+  flex: 0 0 100%;                           /* full width, like the original's block <span>: text centred by text-align */
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  will-change: transform;
+}
+.venom-button__pointer {
+  position: absolute;
+  z-index: 2;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;                         /* same rect as the canvas, so it can never add scroll area */
+  pointer-events: none;
+}
+.venom-button__cursor {
+  position: absolute;
+  left: 0; top: 0;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: 1.5px 1.5px;
+  will-change: transform, opacity;
+}
+
+/* ── cursor handling ── */
+.venom-button[data-venom-hide-cursor] { cursor: none; }          /* default mode: only while over the button */
+html[data-venom-zone-cursor],
+html[data-venom-zone-cursor] * { cursor: none !important; }     /* opt-in "zone" mode only */
+
+/* ── size presets / layout helpers ── */
+.venom-button--sm    { --venom-width: 200px; --venom-height: 64px; --venom-radius: 28px; --venom-font-size: 11px; --venom-focus-offset: 10px; }
+.venom-button--lg    { --venom-width: 340px; --venom-height: 104px; --venom-radius: 44px; --venom-font-size: 14px; }
+.venom-button--block { display: flex; --venom-width: 100%; }
+
+/* ── accessibility / environment ── */
+@media (prefers-reduced-motion: reduce) {
+  .venom-button::before { transition: none; }
+}
+@media (forced-colors: active) {
+  .venom-button__label { forced-color-adjust: none; color: #fff; }   /* label sits on the black canvas body */
+}
+@media print {
+  .venom-button__canvas, .venom-button__pointer { display: none; }
+  .venom-button::before { opacity: 1 !important; }
+}
